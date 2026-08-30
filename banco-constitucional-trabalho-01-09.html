@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco de Questões OAB — Direito Constitucional e Direito do Trabalho</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    background: #f4f1eb;
+    color: #2a2a2a;
+    margin: 0;
+    padding: 20px 12px 60px 12px;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; }
+
+  .badge {
+    display: inline-block;
+    background: #1a2a4a;
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+  h1.title {
+    font-size: 22px;
+    color: #1a2a4a;
+    margin: 4px 0 2px 0;
+  }
+  .subtitle { color: #6b6b6b; font-size: 13px; margin-bottom: 18px; }
+
+  .stats {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
+  }
+  .stats-row { display: flex; justify-content: space-around; text-align: center; margin-bottom: 12px; }
+  .stat-num { font-size: 22px; font-weight: 800; }
+  .stat-label { font-size: 11px; color: #777; text-transform: uppercase; letter-spacing: 0.4px; }
+  .stat-ok .stat-num { color: #2e8b4f; }
+  .stat-no .stat-num { color: #c0392b; }
+  .stat-tot .stat-num { color: #1a2a4a; }
+  .progress-bg { background: #eae6dd; border-radius: 8px; height: 10px; overflow: hidden; }
+  .progress-fill { background: #1a2a4a; height: 100%; width: 0%; transition: width .3s; }
+  .progress-txt { font-size: 11px; color: #777; text-align: center; margin-top: 6px; }
+
+  .navgrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .navbtn {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: #e4e0d6;
+    color: #555;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .navbtn.cur { background: #1a2a4a; color: #fff; }
+  .navbtn.ok { background: #cdeed9; color: #226a3f; }
+  .navbtn.no { background: #f6d2ce; color: #a4291b; }
+
+  .qc { display: none; background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.08); margin-bottom: 16px; }
+  .qc.vis { display: block; }
+
+  .qhead { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .qtag { background: #dceafd; color: #1a56a0; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 10px; }
+  .qexame { font-size: 11px; color: #888; }
+
+  .enunciado {
+    background: #f2efe8;
+    border-left: 4px solid #1a2a4a;
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .comando { font-size: 14px; font-weight: 700; margin: 10px 0 14px 0; color: #1a2a4a; }
+
+  .alt {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    background: #fbfaf7;
+    border: 1.5px solid #e0dcd0;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    font-size: 13.5px;
+    text-align: left;
+    line-height: 1.4;
+  }
+  .alt .lb {
+    flex: 0 0 auto;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #e4e0d6;
+    color: #555;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .alt.cor { background: #e5f6ea; border-color: #2e8b4f; }
+  .alt.cor .lb { background: #2e8b4f; color: #fff; }
+  .alt.err { background: #fbeae8; border-color: #c0392b; }
+  .alt.err .lb { background: #c0392b; color: #fff; }
+  .alt.dis { cursor: default; opacity: 0.85; }
+
+  .fb { display: none; border-radius: 10px; padding: 12px 14px; margin: 10px 0; font-size: 13.5px; line-height: 1.5; }
+  .fb.vis { display: block; }
+  .fb.ok { background: #e5f6ea; color: #1e5c34; }
+  .fb.no { background: #fbeae8; color: #8f2418; }
+
+  .btnrow { display: none; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .btnrow.vis { display: flex; }
+  .tbtn {
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    background: #fff;
+  }
+  .tbtn.leg { border: 1.5px solid #1a2a4a; color: #1a2a4a; }
+  .tbtn.caqui { border: 1.5px solid #d3970a; color: #b3790a; }
+  .tbtn.rst { border: 1.5px solid #999; color: #666; }
+
+  .box-leg, .box-caqui { display: none; border-radius: 10px; padding: 12px 14px; margin-top: 10px; font-size: 13.5px; line-height: 1.55; }
+  .box-leg.vis, .box-caqui.vis { display: block; }
+  .box-leg { background: #d8e2f0; }
+  .box-leg .hd { font-weight: 800; color: #1a2a4a; margin-bottom: 5px; }
+  .box-caqui { background: #fff8e6; border-left: 4px solid #d3970a; }
+  .box-caqui .hd { font-weight: 800; color: #a0740a; margin-bottom: 5px; }
+
+  .pager { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+  .pgbtn {
+    background: #1a2a4a; color: #fff; border: none; padding: 10px 18px;
+    border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer;
+  }
+  .pgbtn:disabled { background: #ccc; cursor: default; }
+  .pgtxt { font-size: 12.5px; color: #777; }
+
+  @media (max-width: 480px) {
+    .qc { padding: 14px; }
+    h1.title { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="badge">📌 BANCO DE QUESTÕES OAB — REVISÃO TERÇA-FEIRA</span>
+  <h1 class="title">Direito Constitucional &amp; Direito do Trabalho</h1>
+  <div class="subtitle">20 questões · Direitos Fundamentais · Poder Executivo · Poder Legislativo · Remédios Constitucionais · Alteração/Suspensão/Interrupção · Extinção do Contrato · Salário e Remuneração</div>
+
+  <div class="stats">
+    <div class="stats-row">
+      <div class="stat-tot"><div class="stat-num" id="stTot">0</div><div class="stat-label">Respondidas</div></div>
+      <div class="stat-ok"><div class="stat-num" id="stOk">0</div><div class="stat-label">Acertos</div></div>
+      <div class="stat-no"><div class="stat-num" id="stNo">0</div><div class="stat-label">Erros</div></div>
+    </div>
+    <div class="progress-bg"><div class="progress-fill" id="pgFill"></div></div>
+    <div class="progress-txt" id="pgTxt">0 de 20 respondidas</div>
+  </div>
+
+  <div class="navgrid" id="navGrid"></div>
+
+  <div id="qlist"></div>
+
+  <div class="pager">
+    <button class="pgbtn" id="btnPrev" onclick="go(-1)">← Anterior</button>
+    <span class="pgtxt" id="pgIndic">1 de 20</span>
+    <button class="pgbtn" id="btnNext" onclick="go(1)">Próxima →</button>
+  </div>
+</div>
+
+<script>
+const QUESTOES = [
+{
+  num:1, exame:"FGV — XLIII Exame de Ordem Unificado (2025) — questão real, gabarito oficial",
+  titulo:"Inviolabilidade de domicílio — desastre e socorro",
+  enunciado:"Durante um violento temporal, em que as chuvas torrenciais poderiam levar ao desabamento de uma casa, os bombeiros militares ingressaram em um domicílio, sem o consentimento do morador, à noite, para socorrer as pessoas que estavam no imóvel. Posteriormente, o morador propôs ação indenizatória por danos morais em face do ente federativo ao qual os bombeiros militares estavam vinculados, argumentando que o referido ingresso fora ilícito.",
+  comando:"Sobre a hipótese narrada, com base no sistema constitucional brasileiro, assinale a afirmativa correta.",
+  alternativas:{
+    A:"A medida adotada pelos bombeiros militares, a despeito da boa intenção deles, foi incorreta, pois o domicílio é inviolável, o que pressupõe a autorização do morador para que pudessem ingressar no local e prestar socorro.",
+    B:"A ação indenizatória não prosperará, pois os bombeiros militares, diante do desastre iminente, não precisam do consentimento do morador do imóvel para prestar socorro.",
+    C:"A despeito do direito à inviolabilidade do domicílio não ser absoluto, o consentimento do morador somente pode ser dispensado por determinação judicial, logo a ação dos bombeiros foi ilícita.",
+    D:"Houve desproporcionalidade na atuação dos agentes, o que permite a condenação do ente federativo na ação indenizatória, visto que a prestação de socorro, sem consentimento do morador, só pode ocorrer durante o dia."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. A inviolabilidade do domicílio (art. 5º, XI, CF) não é absoluta — a própria Constituição admite exceções, entre elas justamente a prestação de socorro, independentemente do consentimento do morador.",
+    B:"Correto! O art. 5º, XI, CF autoriza expressamente o ingresso em domicílio para prestar socorro e em caso de desastre, independentemente da autorização do morador e a qualquer hora. Não há ato ilícito do Estado que justifique indenização.",
+    C:"Errado. A exigência de determinação judicial se aplica apenas à hipótese de ausência de flagrante, desastre ou socorro — não é a única forma de dispensar o consentimento do morador.",
+    D:"Errado. A limitação de horário (somente durante o dia) se aplica apenas ao cumprimento de mandado judicial. Para desastre ou socorro, não existe limitação de horário — pode ocorrer de dia ou de noite."
+  },
+  fundamento:"Art. 5º, XI, CF — a casa é asilo inviolável do indivíduo, ninguém nela podendo penetrar sem consentimento do morador, salvo em caso de flagrante delito ou desastre, ou para prestar socorro, ou, durante o dia, por determinação judicial.",
+  caqui:"Decore as 4 hipóteses e separe por horário: flagrante delito, desastre e socorro entram A QUALQUER HORA (dia ou noite); só a determinação judicial exige que seja DURANTE O DIA. A FGV adora testar justamente essa distinção de horário — não confunda a regra geral (dia) com as três exceções que dispensam esse limite."
+},
+{
+  num:2, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Sigilo das comunicações — a única exceção",
+  enunciado:"Em investigação criminal, a autoridade policial requer ao juízo competente autorização para interceptar as comunicações telefônicas de um investigado, bem como para ter acesso ao conteúdo de suas cartas e telegramas já enviados.",
+  comando:"Considerando o art. 5º, XII, da CF/88, assinale a afirmativa correta.",
+  alternativas:{
+    A:"Tanto a interceptação telefônica quanto o acesso a correspondências e comunicações telegráficas podem ser autorizados judicialmente, para fins de investigação criminal.",
+    B:"O sigilo de correspondência e de comunicações telegráficas e de dados é praticamente absoluto; apenas as comunicações telefônicas admitem exceção, mediante ordem judicial, para investigação criminal ou instrução processual penal, nos termos da Lei 9.296/96.",
+    C:"Nenhuma forma de comunicação pode ter seu sigilo quebrado, ainda que por ordem judicial, tratando-se de direito absoluto.",
+    D:"A quebra de sigilo telefônico pode ser autorizada pela autoridade policial, independentemente de ordem judicial, em caso de urgência."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. O texto constitucional apenas ressalva exceção para as comunicações telefônicas — não para correspondência ou comunicações telegráficas.",
+    B:"Correto! O art. 5º, XII, CF, ao tratar do sigilo de correspondência, comunicações telegráficas, de dados e das comunicações telefônicas, ressalva expressamente apenas esta última hipótese, admitindo quebra por ordem judicial, para investigação criminal ou instrução processual penal, na forma da Lei 9.296/96.",
+    C:"Errado. As comunicações telefônicas admitem exceção expressa no próprio texto constitucional.",
+    D:"Errado. A quebra do sigilo telefônico sempre exige ordem judicial, nunca sendo cabível apenas por decisão da autoridade policial."
+  },
+  fundamento:"Art. 5º, XII, CF — é inviolável o sigilo da correspondência e das comunicações telegráficas, de dados e das comunicações telefônicas, salvo, no último caso, por ordem judicial, nas hipóteses e na forma que a lei estabelecer para fins de investigação criminal ou instrução processual penal. Lei 9.296/96 — regulamenta a interceptação telefônica.",
+  caqui:"Pegadinha clássica: o inciso XII menciona 4 tipos de sigilo (correspondência, comunicações telegráficas, dados, telefone) — mas a exceção do 'salvo... por ordem judicial' só vale para o ÚLTIMO da lista (telefone). Correspondência, telegrama e dados têm proteção praticamente absoluta no texto literal do inciso."
+},
+{
+  num:3, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Nacionalidade — cargos privativos de brasileiro nato",
+  enunciado:"Marcelo, brasileiro naturalizado há 20 anos, sem qualquer condenação penal, deseja concorrer ao cargo de Ministro da Defesa, integrando o primeiro escalão do futuro governo de um candidato que apoia.",
+  comando:"Sobre a possibilidade de Marcelo ocupar esse cargo, assinale a afirmativa correta.",
+  alternativas:{
+    A:"Marcelo pode ocupar o cargo de Ministro da Defesa normalmente, pois brasileiros naturalizados têm os mesmos direitos que os natos, sem qualquer distinção.",
+    B:"Marcelo não pode ocupar o cargo de Ministro da Defesa, pois esse cargo integra o rol taxativo de cargos privativos de brasileiro nato previsto na Constituição.",
+    C:"Marcelo poderia ocupar o cargo, desde que aguardasse mais 5 anos de naturalização, completando 25 anos.",
+    D:"A restrição a cargos só se aplica a naturalizados oriundos de países que não falem língua portuguesa."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. A CF/88 prevê distinções expressas entre natos e naturalizados, entre elas o rol de cargos privativos de nato (art. 12, §3º, CF).",
+    B:"Correto! São 7 os cargos privativos de brasileiro nato (art. 12, §3º, CF): Presidente e Vice-Presidente da República, Presidente da Câmara dos Deputados, Presidente do Senado Federal, Ministro do STF, carreira diplomática, oficial das Forças Armadas e Ministro de Estado da Defesa. Marcelo, por ser naturalizado, não pode ocupar esse cargo, por mais tempo que tenha de naturalização.",
+    C:"Errado. Não existe prazo de naturalização que supra a exigência de nacionalidade originária para esses cargos — a restrição é permanente.",
+    D:"Errado. A restrição de cargos privativos de nato é geral, aplicável a qualquer naturalizado, independentemente da língua do país de origem (essa distinção vale para os requisitos de naturalização, não para os cargos privativos)."
+  },
+  fundamento:"Art. 12, §3º, CF — são privativos de brasileiro nato os cargos de Presidente e Vice-Presidente da República, Presidente da Câmara dos Deputados, Presidente do Senado Federal, Ministro do STF, carreira diplomática, oficial das Forças Armadas e Ministro de Estado da Defesa.",
+  caqui:"Decore os 7 cargos com um mnemônico: PREsidente, VICE, PREsidente da Câmara, PREsidente do Senado, MINistro do STF, DIPlomata, oficial das FORÇAS ARMADAS, MINistro da DEFESA. É uma lista taxativa e curta — a FGV adora trocar um cargo do rol por outro cargo comum (como Ministro de Estado 'genérico', que NÃO exige nato, salvo o da Defesa) para testar se você decorou certinho."
+},
+{
+  num:4, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Voto facultativo — analfabeto",
+  enunciado:"João, 45 anos, é analfabeto e deseja saber se pode votar nas próximas eleições e se pode se candidatar a vereador em seu Município.",
+  comando:"Considerando o sistema constitucional de direitos políticos, assinale a afirmativa correta.",
+  alternativas:{
+    A:"João não pode votar nem se candidatar, pois o analfabetismo é causa de incapacidade eleitoral absoluta.",
+    B:"João pode votar, sendo o voto facultativo para ele (assim como para maiores de 70 anos e para maiores de 16 e menores de 18 anos), mas é inelegível, não podendo se candidatar a nenhum cargo eletivo.",
+    C:"João pode votar e se candidatar normalmente, pois a Constituição não distingue eleitores alfabetizados de analfabetos para nenhum fim.",
+    D:"João não pode votar, mas pode se candidatar, desde que comprove escolaridade mínima por meio de curso supletivo."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. O analfabeto tem capacidade eleitoral ativa (pode votar) — o voto é apenas facultativo para ele, não vedado.",
+    B:"Correto! O voto é facultativo para os analfabetos, os maiores de 70 anos e os maiores de 16 e menores de 18 anos (art. 14, §1º, II, CF). Porém, o analfabeto é inelegível (art. 14, §4º, CF) — pode votar, mas não pode ser votado.",
+    C:"Errado. Há sim distinção constitucional expressa: o analfabeto é inelegível, ainda que possa votar.",
+    D:"Errado. A vedação à candidatura do analfabeto é constitucional e não se supre por comprovação posterior de escolaridade via supletivo, para fins do requisito de elegibilidade em si."
+  },
+  fundamento:"Art. 14, §1º, II, 'a', CF — o alistamento eleitoral e o voto são facultativos para os analfabetos. Art. 14, §4º, CF — são inelegíveis os inalistáveis e os analfabetos.",
+  caqui:"Não confunda as duas coisas: CAPACIDADE ELEITORAL ATIVA (votar) x CAPACIDADE ELEITORAL PASSIVA (ser votado/candidatar-se). O analfabeto tem a primeira (com voto facultativo), mas NÃO tem a segunda (é inelegível). É uma das pegadinhas mais repetidas da FGV em Direitos Políticos."
+},
+{
+  num:5, exame:"FGV — XV Exame de Ordem Unificado (2014) — questão real, gabarito oficial",
+  titulo:"Perda de mandato parlamentar — falta às sessões",
+  enunciado:"O senador \"X\" ausentou-se das atividades do Senado Federal para tratar de assunto de interesse particular por cento e cinquenta dias ininterruptos e, diante desse fato, enfrenta representação para a perda do seu mandato, por não ter comparecido à terça parte das sessões ordinárias da Casa, que foram realizadas no período em que esteve ausente.",
+  comando:"Nessa hipótese, assinale a afirmativa correta.",
+  alternativas:{
+    A:"A perda do mandato do referido senador será decidida pelo Senado Federal, por maioria absoluta, mediante provocação da respectiva mesa ou de partido político representado no Congresso Nacional, assegurada a ampla defesa.",
+    B:"Não poderá o referido parlamentar perder o mandato, já que o afastamento não ultrapassou cento e oitenta dias dentro da mesma sessão legislativa.",
+    C:"A perda do mandato do referido senador poderá ser declarada pela Mesa da Casa Legislativa de ofício ou mediante provocação de qualquer dos seus membros, ou de partido político representado no Congresso Nacional, assegurada a ampla defesa.",
+    D:"Caso o referido senador venha a renunciar após submetido ao processo que vise ou possa levar à perda do seu mandato, haverá o arquivamento do processo pela perda do seu objeto."
+  },
+  gabarito:"A",
+  feedbacks:{
+    A:"Correto! A falta a 1/3 das sessões ordinárias (art. 55, III, CF) é hipótese sujeita à DELIBERAÇÃO, na forma do art. 55, §2º, CF: decisão da Casa respectiva (aqui, o Senado), por maioria absoluta, mediante provocação da Mesa ou de partido político representado no Congresso Nacional, assegurada ampla defesa. Não é caso de extinção automática.",
+    B:"Errado. O prazo de 180 dias não é o parâmetro para essa hipótese — o critério constitucional é a falta a 1/3 das sessões ordinárias da Casa, independentemente de um número fixo de dias corridos.",
+    C:"Errado. A decisão não cabe à Mesa por si só nem de ofício — cabe à Casa respectiva (Plenário), por maioria absoluta, mediante provocação da Mesa ou de partido político, e não decisão unilateral da própria Mesa.",
+    D:"Errado. Desde a EC 76/2013 e o entendimento consolidado, a renúncia apresentada quando já iniciado o processo que vise à perda do mandato não obsta seu prosseguimento até decisão final — não há arquivamento automático por perda de objeto."
+  },
+  fundamento:"Art. 55, III, CF — perde o mandato o Deputado ou Senador que deixar de comparecer, em cada sessão legislativa, à terça parte das sessões ordinárias da Casa a que pertencer, salvo licença ou missão autorizada. Art. 55, §2º, CF — nesse caso (bem como no de quebra de decoro parlamentar), a perda será decidida pela Câmara ou pelo Senado, por maioria absoluta, mediante provocação da respectiva Mesa ou de partido político representado no Congresso Nacional, assegurada ampla defesa.",
+  caqui:"O art. 55 tem duas 'famílias' de hipóteses de perda de mandato: as que dependem de DELIBERAÇÃO da Casa (incisos I e II — infringir proibição do art. 54 e quebra de decoro — regidas pelo §2º) e as que são de EXTINÇÃO AUTOMÁTICA, apenas declarada pela Mesa (incisos III a VI — falta às sessões, perda de direitos políticos, decisão da Justiça Eleitoral, condenação criminal — regidas pelo §3º). Só que, atenção: apesar de estar no §3º na letra fria, o STF pacificou que a falta a 1/3 das sessões (inciso III) segue o rito do §2º (deliberação da Casa, maioria absoluta), não a mera declaração da Mesa — é exatamente essa nuance que a questão cobra."
+},
+{
+  num:6, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Cláusulas pétreas",
+  enunciado:"Um grupo de parlamentares apresenta Proposta de Emenda Constitucional pretendendo alterar a forma federativa de Estado, transformando o Brasil em Estado unitário, sob o argumento de maior eficiência administrativa.",
+  comando:"À luz do sistema constitucional de reforma da Constituição, assinale a afirmativa correta.",
+  alternativas:{
+    A:"A proposta pode tramitar normalmente, desde que aprovada por 3/5 dos votos em cada Casa, em 2 turnos.",
+    B:"A proposta sequer pode ser objeto de deliberação, pois a forma federativa de Estado é cláusula pétrea (art. 60, §4º, CF), imune até mesmo à deliberação da matéria, não apenas à sua aprovação.",
+    C:"A proposta pode ser deliberada, mas depende de referendo popular para produzir efeitos.",
+    D:"A proposta pode ser aprovada, desde que ratificada por maioria absoluta das Assembleias Legislativas estaduais."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. Cláusulas pétreas não podem sequer ser objeto de deliberação — não é uma questão de quórum de aprovação, mas de vedação à própria discussão da matéria.",
+    B:"Correto! O art. 60, §4º, CF veda que seja objeto de deliberação a proposta de emenda tendente a abolir: a forma federativa de Estado; o voto direto, secreto, universal e periódico; a separação dos Poderes; e os direitos e garantias individuais. A vedação atinge a própria deliberação, e não apenas o resultado da votação.",
+    C:"Errado. Não existe essa possibilidade de referendo para contornar cláusula pétrea — a vedação é absoluta quanto à deliberação.",
+    D:"Errado. Nenhum quórum ou procedimento supera a vedação de deliberação sobre cláusula pétrea."
+  },
+  fundamento:"Art. 60, §4º, CF — não será objeto de deliberação a proposta de emenda tendente a abolir: I - a forma federativa de Estado; II - o voto direto, secreto, universal e periódico; III - a separação dos Poderes; IV - os direitos e garantias individuais.",
+  caqui:"Decore as 4 cláusulas pétreas com o mnemônico FE-VO-SE-DI: FEderação, VOto (direto/secreto/universal/periódico), SEparação dos Poderes, DIreitos e garantias individuais. Repare que a vedação constitucional fala em 'não será objeto de DELIBERAÇÃO' — ou seja, nem discutir se pode; a proposta nem chega a ser votada."
+},
+{
+  num:7, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Medida provisória — prazo e vedações",
+  enunciado:"O Presidente da República edita medida provisória para instituir um novo tributo, com o objetivo de gerar receita imediata para o Tesouro Nacional diante de uma crise fiscal.",
+  comando:"Sobre a hipótese, assinale a afirmativa correta.",
+  alternativas:{
+    A:"A medida provisória é válida, pois o Presidente pode legislar sobre qualquer matéria em caso de urgência e relevância.",
+    B:"A medida provisória é constitucionalmente vedada para matéria tributária em geral, já que o rol de vedações do art. 62, §1º, CF inclui matéria reservada à lei complementar, entre outras — mas é preciso verificar se o tributo específico depende de lei complementar.",
+    C:"Medida provisória perde eficácia, desde a edição, se não for convertida em lei no prazo de 60 dias, prorrogável uma única vez por igual período; é vedada para matéria penal, eleitoral, orçamentária (nas hipóteses do art. 62, §1º, I, 'd') e reservada à lei complementar.",
+    D:"O prazo de eficácia da medida provisória é de 90 dias, sem possibilidade de prorrogação, sendo vedada apenas para matéria penal."
+  },
+  gabarito:"C",
+  feedbacks:{
+    A:"Errado. A MP não pode versar sobre qualquer matéria — há vedações expressas no art. 62, §1º, CF, entre elas matéria reservada à lei complementar.",
+    B:"Parcialmente impreciso como resposta objetiva — o ponto central pedido é o regime geral de prazo e vedações da MP, tratado de forma completa na alternativa C.",
+    C:"Correto! A medida provisória perde eficácia, desde a edição, se não for convertida em lei no prazo de 60 dias, prorrogável uma única vez por igual período (art. 62, §3º e §7º, CF). É vedada, entre outras hipóteses do art. 62, §1º, CF, para matéria penal, eleitoral, matéria orçamentária no sentido do art. 62, §1º, I, 'd', e matéria reservada à lei complementar.",
+    D:"Errado. O prazo é de 60 dias, prorrogável uma vez por igual período (total até 120 dias), e não de 90 dias sem prorrogação; e as vedações vão muito além da matéria penal."
+  },
+  fundamento:"Art. 62, §1º, CF — vedações à edição de MP, incluindo matéria relativa a direito penal, processual penal e processual civil; matéria eleitoral; planos plurianuais, diretrizes orçamentárias, orçamento e créditos adicionais e suplementares (ressalvado o art. 167, §3º); e matéria reservada à lei complementar. Art. 62, §3º e §7º, CF — prazo de eficácia de 60 dias, prorrogável uma única vez por igual período.",
+  caqui:"Guarde o número 60: prazo de eficácia da MP, prorrogável 1 vez por igual período (total: até 120 dias). E entre as vedações, memorize pelo menos quatro: matéria PENAL, matéria ELEITORAL, matéria ORÇAMENTÁRIA (no sentido específico do art. 62, §1º, I, d) e matéria de LEI COMPLEMENTAR — a MP nunca pode 'driblar' o quórum qualificado exigido para lei complementar."
+},
+{
+  num:8, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Poder Executivo — segundo turno e substituição de candidato",
+  enunciado:"Faltando poucos dias para o segundo turno das eleições presidenciais, um dos dois candidatos mais votados no primeiro turno vem a falecer.",
+  comando:"Segundo o sistema constitucional brasileiro, assinale a afirmativa correta.",
+  alternativas:{
+    A:"A eleição é automaticamente anulada, devendo ser reiniciado todo o processo eleitoral, com novo primeiro turno.",
+    B:"Convoca-se, dentre os candidatos remanescentes, o de maior votação no primeiro turno, para concorrer ao segundo turno com o candidato que permaneceu na disputa.",
+    C:"O segundo turno é automaticamente cancelado, sendo eleito o candidato remanescente, independentemente do percentual de votos obtido por ele.",
+    D:"A vaga é preenchida pelo vice do candidato falecido, que assume automaticamente sua posição na disputa do segundo turno."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. Não há reinício do processo eleitoral; a lei prevê solução específica de substituição do candidato para o segundo turno.",
+    B:"Correto! Se antes de realizado o segundo turno ocorrer morte, desistência ou impedimento legal de candidato, convocar-se-á, dentre os remanescentes, o de maior votação (art. 77, §4º, CF). Havendo empate no 2º lugar, qualifica-se o mais idoso.",
+    C:"Errado. O segundo turno se realiza normalmente, apenas com a substituição do candidato falecido pelo remanescente de maior votação.",
+    D:"Errado. Não há assunção automática pelo vice do candidato falecido para concorrer no lugar do titular — a Constituição prevê a convocação do candidato remanescente mais votado."
+  },
+  fundamento:"Art. 77, §4º, CF — se, antes de realizado o segundo turno, ocorrer morte, desistência ou impedimento legal de candidato, convocar-se-á, dentre os remanescentes, o de maior votação.",
+  caqui:"Regra do 'próximo da fila': se um dos dois finalistas cai fora antes do segundo turno (morte, desistência, impedimento), não se refaz a eleição — simplesmente chama-se quem ficou em terceiro lugar no primeiro turno (o 'de maior votação' entre os remanescentes) para disputar o segundo turno no lugar dele. E se houver empate nesse terceiro lugar, desempata pela idade (mais velho vence)."
+},
+{
+  num:9, exame:"Inédita — estilo FGV/OAB",
+  titulo:"EC 111/2021 — posse do Presidente",
+  enunciado:"Após as eleições de 2026, um cidadão pergunta a você, como advogado(a), em que data o novo Presidente da República eleito tomará posse.",
+  comando:"Com base na Constituição Federal, assinale a afirmativa correta.",
+  alternativas:{
+    A:"A posse ocorrerá em 1º de janeiro, data tradicional mantida sem alterações pela Constituição.",
+    B:"A posse ocorrerá em 5 de janeiro, conforme alteração promovida pela EC 111/2021, aplicável a partir das eleições de 2026.",
+    C:"A posse ocorrerá em 15 de janeiro, prazo padronizado para todos os chefes do Poder Executivo (federal, estadual e municipal).",
+    D:"A data da posse é definida por lei ordinária a cada eleição, sem previsão fixa na Constituição."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. A data de 1º de janeiro foi alterada pela EC 111/2021, passando a posse para 5 de janeiro a partir das eleições de 2026.",
+    B:"Correto! A EC 111/2021 alterou o art. 82, CF: a posse do Presidente e do Vice-Presidente passa a ser em 5 de janeiro do ano seguinte à eleição, regra aplicável a partir das eleições de 2026 (mantido 1º de janeiro para os mandatos anteriores a essa transição).",
+    C:"Errado. O prazo de posse do governador (art. 28, CF) é diferente — 6 de janeiro — e o do Presidente é 5 de janeiro; não há padronização única para todos os níveis federativos.",
+    D:"Errado. A data de posse do Presidente é fixada diretamente na Constituição (art. 82, CF), não delegada à lei ordinária."
+  },
+  fundamento:"Art. 82, CF (redação da EC 111/2021) — o mandato do Presidente da República é de 4 anos e terá início em 5 de janeiro do ano seguinte ao da eleição.",
+  caqui:"Cuidado com a pegadinha entre datas de posse: Presidente da República toma posse em 5 de janeiro (EC 111/2021); Governador de Estado toma posse em 6 de janeiro (art. 28, CF). A FGV adora trocar essas duas datas entre si — decore que o Presidente vem primeiro (dia 5), o Governador um dia depois (dia 6)."
+},
+{
+  num:10, exame:"FGV — XLIII Exame de Ordem Unificado (2025) — questão real, gabarito oficial",
+  titulo:"Ação popular — legitimidade do naturalizado",
+  enunciado:"O Presidente da República, por ter alegadamente atuado com o intuito de beneficiar pessoas de seu círculo de amizades pessoais, é acusado de influir diretamente no resultado de uma grande licitação, cujo procedimento ocorreu em órgão do Ministério X. Enzo, francês nato e naturalizado brasileiro, com candidatura deferida para disputar a eleição para vereador no Município em que reside, resolveu consultá-lo(a), como advogado(a), para saber se ele poderia ajuizar uma ação constitucional para anular a referida licitação e para preservar a intangibilidade do patrimônio público, bem como a integridade do princípio da moralidade administrativa.",
+  comando:"Analisando a narrativa à luz do sistema jurídico-constitucional, assinale a afirmativa que apresenta, corretamente, a solução para o caso em tela.",
+  alternativas:{
+    A:"Enzo, por ser francês nato, não tem legitimidade ativa para ajuizar ação constitucional com o objetivo almejado, mas pode impetrar um mandado de segurança perante o Superior Tribunal de Justiça para sustar a eficácia do ato.",
+    B:"Enzo, na qualidade de cidadão brasileiro, pode ajuizar uma ação popular perante o Supremo Tribunal Federal.",
+    C:"Enzo, no exercício de direito fundamental, pode ajuizar uma ação civil pública com o objetivo de proteger o interesse difuso de uma Administração Pública proba.",
+    D:"Enzo, por ser naturalizado brasileiro e ostentar a qualidade de cidadão, pode ajuizar uma ação popular perante o Juízo competente de primeiro grau."
+  },
+  gabarito:"D",
+  feedbacks:{
+    A:"Errado. A condição de francês nato e brasileiro naturalizado garante a Enzo a qualidade de cidadão brasileiro, o que lhe confere legitimidade ativa para a ação popular — não é necessário ser nato. Mandado de segurança tampouco é o meio adequado, nem o STJ teria competência para esse caso específico.",
+    B:"Errado. Embora Enzo tenha legitimidade como cidadão, a competência para julgar ação popular não é do STF, mas do juízo de primeira instância.",
+    C:"Errado. A ação civil pública não pode ser ajuizada por cidadão comum individualmente — é prerrogativa do Ministério Público, Defensoria Pública, entes públicos e associações legalmente constituídas (Lei 7.347/85, art. 5º), não de particulares isoladamente.",
+    D:"Correto! A ação popular (art. 5º, LXXIII, CF) pode ser proposta por qualquer cidadão brasileiro (inclusive naturalizado) para anular ato lesivo ao patrimônio público e à moralidade administrativa. O juízo competente é o de primeira instância da Justiça Comum, não o STF ou o STJ."
+  },
+  fundamento:"Art. 5º, LXXIII, CF — qualquer cidadão é parte legítima para propor ação popular que vise a anular ato lesivo ao patrimônio público ou de entidade de que o Estado participe, à moralidade administrativa, ao meio ambiente e ao patrimônio histórico e cultural, ficando o autor, salvo comprovada má-fé, isento de custas judiciais e do ônus da sucumbência.",
+  caqui:"Cidadania para ação popular = ter título de eleitor, seja brasileiro nato ou naturalizado — não importa a nacionalidade de origem. E lembre-se: a ação popular NUNCA vai direto para tribunal superior — a competência é sempre do juízo de primeiro grau, mesmo quando o ato questionado envolve autoridades de altíssimo escalão como o Presidente da República."
+},
+{
+  num:11, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Habeas data",
+  enunciado:"Marina descobre que seu nome consta em um banco de dados mantido por órgão público federal, com informação que considera desatualizada e que lhe causa prejuízo em processos seletivos. Ela deseja ter acesso a essas informações e, se necessário, retificá-las.",
+  comando:"Sobre o remédio constitucional cabível, assinale a afirmativa correta.",
+  alternativas:{
+    A:"Cabe mandado de segurança, pois se trata de direito líquido e certo violado por autoridade pública.",
+    B:"Cabe habeas data, concedido para conhecer informações relativas à pessoa do impetrante constantes de bancos de dados públicos, e para retificá-las quando não se prefira fazê-lo por processo sigiloso, judicial ou administrativo.",
+    C:"Cabe apenas ação ordinária de conhecimento, já que não há remédio constitucional específico para essa finalidade.",
+    D:"Cabe habeas corpus, por analogia, já que ambos os remédios protegem direitos da personalidade."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. Existe remédio constitucional específico e mais adequado para essa finalidade: o habeas data.",
+    B:"Correto! Concede-se habeas data para: (a) conhecer informações relativas à pessoa do impetrante constantes de registros ou bancos de dados de entidades governamentais ou de caráter público; (b) para retificação de dados, quando não se prefira fazê-lo por processo sigiloso, judicial ou administrativo; (c) para anotação de contestação ou explicação sobre dado verdadeiro mas justificável, que esteja sob pendência judicial ou amigável.",
+    C:"Errado. O habeas data é remédio constitucional específico exatamente para essa finalidade (art. 5º, LXXII, CF).",
+    D:"Errado. Habeas corpus protege a liberdade de locomoção, não tem relação com acesso a bancos de dados."
+  },
+  fundamento:"Art. 5º, LXXII, CF — conceder-se-á habeas data: a) para assegurar o conhecimento de informações relativas à pessoa do impetrante, constantes de registros ou bancos de dados de entidades governamentais ou de caráter público; b) para a retificação de dados, quando não se prefira fazê-lo por processo sigiloso, judicial ou administrativo; c) para anotação de contestação ou explicação sobre dado verdadeiro, mas justificável, que esteja sob pendência judicial ou amigável (Lei 9.507/97).",
+  caqui:"Decore as 3 finalidades do habeas data com os verbos: CONHECER, RETIFICAR, ANOTAR (contestação/explicação sobre dado verdadeiro mas justificável). E lembre: habeas data e habeas corpus são SEMPRE gratuitos — o habeas data tem inclusive prazo de 24 horas, após a distribuição, para conclusão do processo."
+},
+{
+  num:12, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Mandado de segurança coletivo",
+  enunciado:"Uma associação de moradores de um bairro, constituída há apenas 8 meses, pretende impetrar mandado de segurança coletivo contra ato de autoridade municipal que considera ilegal, em defesa dos interesses de seus associados.",
+  comando:"Sobre a legitimidade da associação para essa medida, assinale a afirmativa correta.",
+  alternativas:{
+    A:"A associação tem legitimidade, pois qualquer entidade constituída pode impetrar mandado de segurança coletivo, independentemente do tempo de existência.",
+    B:"A associação não tem legitimidade para o mandado de segurança coletivo, pois não está constituída e em funcionamento há pelo menos 1 ano, requisito exigido para entidades de classe/associações (diferente dos partidos políticos com representação no Congresso Nacional, que não têm essa exigência de tempo).",
+    C:"A associação tem legitimidade, desde que obtenha autorização judicial prévia para dispensa do requisito temporal.",
+    D:"Somente partidos políticos podem impetrar mandado de segurança coletivo, sendo vedado a associações e entidades de classe."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. A CF exige, para associações/entidades de classe, que estejam legalmente constituídas e em funcionamento há pelo menos 1 ano.",
+    B:"Correto! O mandado de segurança coletivo pode ser impetrado por partido político com representação no Congresso Nacional (sem exigência de tempo mínimo de constituição), ou por organização sindical, entidade de classe ou associação legalmente constituída e em funcionamento há pelo menos 1 ano, na defesa dos interesses de seus membros ou associados. A associação do caso, com apenas 8 meses, não atende a esse requisito.",
+    C:"Errado. Não existe essa possibilidade de dispensa judicial do requisito constitucional de tempo mínimo de funcionamento.",
+    D:"Errado. Associações e entidades de classe também têm legitimidade, desde que atendido o requisito temporal — a legitimidade não é exclusiva de partidos políticos."
+  },
+  fundamento:"Art. 5º, LXX, CF — o mandado de segurança coletivo pode ser impetrado por: a) partido político com representação no Congresso Nacional; b) organização sindical, entidade de classe ou associação legalmente constituída e em funcionamento há pelo menos um ano, em defesa dos interesses de seus membros ou associados.",
+  caqui:"Repare na assimetria: partido político com representação no Congresso Nacional NÃO precisa de tempo mínimo de existência para impetrar MS coletivo; já sindicatos, entidades de classe e associações PRECISAM ter pelo menos 1 ano de constituição e funcionamento. É uma pegadinha certeira: a FGV gosta de generalizar a exigência do 1 ano para todos os legitimados, o que está errado."
+},
+{
+  num:13, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Mandado de injunção",
+  enunciado:"Um grupo de trabalhadores deseja exercer direito previsto expressamente na Constituição Federal, mas sua efetivação depende de norma regulamentadora ainda não editada pelo Congresso Nacional, apesar de decorridos muitos anos desde a promulgação da Constituição.",
+  comando:"Sobre o remédio constitucional cabível e seus efeitos, assinale a afirmativa correta.",
+  alternativas:{
+    A:"Cabe ação direta de inconstitucionalidade por omissão exclusivamente, sendo vedado o mandado de injunção para particulares.",
+    B:"Concede-se mandado de injunção sempre que a falta de norma regulamentadora torne inviável o exercício de direitos e liberdades constitucionais e de prerrogativas inerentes à nacionalidade, soberania e cidadania; reconhecida a mora legislativa, o juiz fixa prazo razoável para a edição da norma ou já estabelece as condições de exercício do direito reclamado.",
+    C:"O mandado de injunção só pode ser impetrado pelo Ministério Público, nunca por particulares diretamente interessados.",
+    D:"Reconhecida a mora legislativa em mandado de injunção, o Judiciário deve apenas comunicar o Congresso Nacional, sem poder estabelecer, ele próprio, as condições de exercício do direito."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. O mandado de injunção é cabível para particulares diretamente prejudicados pela falta de norma regulamentadora — é remédio concreto, diferente da ADO (controle abstrato).",
+    B:"Correto! Concede-se mandado de injunção sempre que a falta de norma regulamentadora torne inviável o exercício de direitos e liberdades constitucionais e das prerrogativas inerentes à nacionalidade, à soberania e à cidadania (art. 5º, LXXI, CF). Reconhecida a mora legislativa, o Judiciário pode fixar prazo razoável para a edição da norma faltante, ou já estabelecer diretamente as condições em que se dará o exercício do direito, liberdade ou prerrogativa reclamados, se a norma não for editada.",
+    C:"Errado. O mandado de injunção pode ser impetrado por qualquer pessoa, física ou jurídica, diretamente afetada pela omissão legislativa — não é exclusividade do Ministério Público.",
+    D:"Errado. A posição consolidada (inclusive na Lei 13.300/2016) admite que o Judiciário estabeleça diretamente as condições para o exercício do direito, e não apenas comunique a omissão."
+  },
+  fundamento:"Art. 5º, LXXI, CF — conceder-se-á mandado de injunção sempre que a falta de norma regulamentadora torne inviável o exercício dos direitos e liberdades constitucionais e das prerrogativas inerentes à nacionalidade, à soberania e à cidadania. Lei 13.300/2016 — disciplina o processo de julgamento do mandado de injunção individual e coletivo.",
+  caqui:"Não confunda ADO (Ação Direta de Inconstitucionalidade por Omissão) com Mandado de Injunção: a ADO é controle ABSTRATO, ajuizada por legitimados do art. 103, CF, apenas 'avisando' o Poder omisso; o MI é remédio CONCRETO, ajuizado por qualquer pessoa diretamente afetada, e o juiz pode até suprir a lacuna, fixando as condições de exercício do direito enquanto a lei não vem."
+},
+{
+  num:14, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Adicional de transferência — OJ 113, SDI-1, TST",
+  enunciado:"Roberto ocupa cargo de confiança em uma empresa e possui, em seu contrato, cláusula expressa de transferência. A empresa efetivamente o transfere para outra unidade, em cidade diversa, sem necessidade de sua anuência prévia, dado o teor da cláusula contratual.",
+  comando:"Sobre o direito de Roberto ao adicional de transferência, assinale a afirmativa correta.",
+  alternativas:{
+    A:"Roberto não terá direito ao adicional de transferência, pois a existência de cláusula contratual de transferência afasta qualquer direito adicional.",
+    B:"Roberto terá direito ao adicional de 25%, enquanto durar a transferência, mesmo havendo cláusula contratual de transferência ou cargo de confiança, pois a existência dessas circunstâncias dispensa apenas a anuência prévia, não o pagamento do adicional, conforme entendimento consolidado do TST.",
+    C:"Roberto só terá direito ao adicional se a transferência for para o exterior.",
+    D:"O adicional de transferência é sempre de 40%, equivalente ao índice do FGTS."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. A cláusula de transferência ou o cargo de confiança dispensam apenas a exigência de anuência prévia do empregado, mas não retiram o direito ao adicional quando a transferência efetivamente ocorre.",
+    B:"Correto! Segundo a OJ 113, SDI-1, TST, o empregado que exerce cargo de confiança ou que tem cláusula de transferência em seu contrato pode ser transferido sem necessidade de anuência prévia — mas isso não afasta o direito ao adicional de transferência de 25%, enquanto durar essa situação, se a transferência de fato ocorrer.",
+    C:"Errado. O adicional de transferência não é restrito a transferências internacionais — aplica-se a qualquer mudança de localidade que implique mudança de domicílio, provisória.",
+    D:"Errado. O adicional de transferência é de 25%, não 40% (esse último é o percentual da multa rescisória do FGTS, instituto diferente)."
+  },
+  fundamento:"OJ 113, SDI-1, TST — o fato de o empregado exercer cargo de confiança, ou de haver previsão contratual de transferência, não retira o direito ao adicional de transferência, previsto no art. 469, §3º, CLT, enquanto durar essa condição transitória.",
+  caqui:"Separe duas coisas que a FGV adora misturar: (1) precisar ou não de ANUÊNCIA prévia para a transferência — cargo de confiança e cláusula contratual dispensam essa anuência; (2) ter direito ou não ao ADICIONAL de 25% — isso continua sendo devido, independentemente da dispensa de anuência, enquanto a transferência provisória durar."
+},
+{
+  num:15, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Insalubridade x periculosidade — não acumulação",
+  enunciado:"Cláudio trabalha em condições que, simultaneamente, configuram insalubridade em grau máximo e periculosidade, conforme laudo pericial. Ele pretende receber os dois adicionais cumulativamente.",
+  comando:"Sobre a possibilidade de cumulação, assinale a afirmativa correta.",
+  alternativas:{
+    A:"Cláudio tem direito a receber os dois adicionais cumulativamente, pois ambos decorrem de riscos distintos.",
+    B:"Os adicionais de insalubridade e de periculosidade não se acumulam; o empregado deve optar por um deles — o de insalubridade incide sobre o salário-mínimo da região (nos percentuais de 40%, 20% ou 10%), e o de periculosidade incide sobre o salário do próprio empregado (30%).",
+    C:"Cláudio deve receber automaticamente o de periculosidade, sendo o de insalubridade sempre absorvido pelo primeiro.",
+    D:"A cumulação é permitida apenas para trabalhadores rurais."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. A CLT veda expressamente a cumulação — o empregado deve optar pelo adicional que lhe for mais vantajoso.",
+    B:"Correto! Os adicionais de insalubridade e periculosidade não se acumulam (art. 193, §2º, CLT). O de insalubridade incide sobre o salário-mínimo da região, nos graus mínimo (10%), médio (20%) ou máximo (40%); o de periculosidade incide sobre o salário do próprio empregado, no percentual de 30%. O empregado tem o direito de optar pelo que for mais vantajoso.",
+    C:"Errado. Não há absorção automática — é uma opção do empregado, que pode escolher qualquer um dos dois, conforme o que for mais benéfico a ele.",
+    D:"Errado. A vedação à cumulação é regra geral da CLT, aplicável a qualquer trabalhador nessa condição, urbano ou rural."
+  },
+  fundamento:"Art. 193, §2º, CLT — o empregado poderá optar pelo adicional de insalubridade que porventura lhe seja devido. Art. 192, CLT — adicional de insalubridade nos percentuais de 40%, 20% e 10% sobre o salário-mínimo. Art. 193, §1º, CLT — adicional de periculosidade de 30% sobre o salário do empregado, sem os acréscimos resultantes de gratificações, prêmios ou participação nos lucros.",
+  caqui:"Base de cálculo é o detalhe que mais cai: insalubridade = % sobre o SALÁRIO-MÍNIMO da região (não o salário do empregado); periculosidade = % sobre o SALÁRIO do PRÓPRIO empregado. E nunca esqueça: não acumulam — é sempre 'ou um, ou outro', escolhendo o mais vantajoso."
+},
+{
+  num:16, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Indisciplina x insubordinação",
+  enunciado:"Em uma fábrica, um regulamento interno proíbe o uso de celular no chão de fábrica por todos os empregados, sem exceção. Marcos descumpre essa norma repetidas vezes. Em outro episódio, seu supervisor determina, pessoalmente e por escrito, que Marcos utilize determinado equipamento de proteção específico naquele dia, e Marcos se recusa a obedecer.",
+  comando:"Sobre a qualificação jurídica dessas duas condutas, assinale a afirmativa correta.",
+  alternativas:{
+    A:"Ambas as condutas configuram indisciplina, pois ambas envolvem descumprimento de determinações do empregador.",
+    B:"O descumprimento da norma geral do regulamento interno configura indisciplina; a recusa em obedecer à ordem direta e individual do supervisor configura insubordinação — são faltas distintas para fins de justa causa.",
+    C:"Ambas as condutas configuram insubordinação, já que ambas partem, em última análise, do poder diretivo do empregador.",
+    D:"Nenhuma das duas condutas é apta a configurar justa causa, sendo necessária sempre a aplicação prévia de advertência e suspensão."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. As duas condutas têm natureza jurídica distinta, apesar de ambas poderem, em tese, configurar justa causa.",
+    B:"Correto! Indisciplina é o descumprimento de norma geral da empresa, dirigida a todos os empregados (no caso, o regulamento sobre uso de celular). Insubordinação é o descumprimento de ordem direta e pessoal emanada de superior hierárquico, dirigida especificamente ao empregado (no caso, a determinação do supervisor sobre o EPI). Ambas podem, dependendo da gravidade e reiteração, configurar justa causa (art. 482, 'h', CLT), mas são hipóteses tecnicamente distintas.",
+    C:"Errado. Só a segunda conduta (recusa à ordem direta e individual) configura insubordinação; a primeira, por ser norma geral, é indisciplina.",
+    D:"Errado. A CLT não exige gradação obrigatória (advertência → suspensão → demissão) para toda e qualquer falta — a gravidade do caso concreto é que determina a proporcionalidade da penalidade, podendo, em tese, ensejar justa causa diretamente conforme a intensidade e reiteração da conduta."
+  },
+  fundamento:"Art. 482, 'h', CLT — constitui justa causa para rescisão do contrato de trabalho pelo empregador o ato de indisciplina ou de insubordinação.",
+  caqui:"Truque de memorização: INdisciplina = descumprir norma IMPESSOAL, GERAL, dirigida a todos ('não pode usar celular na fábrica' vale para todo mundo). INSUBORDINAÇÃO = descumprir ordem DIRETA, PESSOAL, individual de um superior hierárquico específico ('você, hoje, use este equipamento'). A palavra 'sub-ordinação' já entrega: é sobre desobedecer a quem está na sua linha hierárquica direta."
+},
+{
+  num:17, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Distrato — art. 484-A, CLT",
+  enunciado:"Empregado e empregador, de comum acordo, decidem extinguir o contrato de trabalho por meio do distrato previsto no art. 484-A da CLT.",
+  comando:"Sobre os efeitos dessa modalidade de extinção contratual, assinale a afirmativa correta.",
+  alternativas:{
+    A:"No distrato, todas as verbas rescisórias são pagas pela metade, inclusive o saldo de salário e as férias vencidas.",
+    B:"No distrato, o aviso-prévio indenizado e a indenização sobre o FGTS (20%, em vez de 40%) são pagos pela metade; as demais verbas rescisórias são pagas na íntegra — mas não há direito ao seguro-desemprego nem à movimentação da multa integral do FGTS.",
+    C:"O distrato garante ao empregado o direito integral ao seguro-desemprego, exatamente como na dispensa sem justa causa.",
+    D:"O distrato exige, obrigatoriamente, homologação sindical para ter validade, sob pena de nulidade."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. Apenas o aviso-prévio indenizado e a indenização do FGTS são reduzidos pela metade; as demais verbas (saldo de salário, férias vencidas e proporcionais, 13º proporcional) são pagas integralmente.",
+    B:"Correto! No distrato (art. 484-A, CLT), o aviso-prévio, se indenizado, é pago pela metade, e a indenização sobre o FGTS é de 20% (em vez de 40%); as demais verbas trabalhistas são pagas na integralidade. Contudo, não há acesso ao seguro-desemprego, e o empregado só pode movimentar até 80% do valor depositado do FGTS (não a integralidade).",
+    C:"Errado. Justamente ao contrário: o distrato NÃO dá direito ao seguro-desemprego, diferentemente da dispensa sem justa causa.",
+    D:"Errado. O distrato do art. 484-A não exige homologação sindical como requisito de validade."
+  },
+  fundamento:"Art. 484-A, CLT — o contrato de trabalho poderá ser extinto por acordo entre empregado e empregador, caso em que serão devidas as seguintes verbas trabalhistas: I - por metade: a) o aviso prévio, se indenizado; e b) a indenização sobre o saldo do FGTS, prevista no §1º do art. 18 da Lei 8.036/90; II - na integralidade, as demais verbas trabalhistas. §2º - A extinção do contrato prevista no caput autoriza a movimentação da conta vinculada do FGTS, limitada a 80% do valor dos depósitos, e não autoriza o ingresso no seguro-desemprego.",
+  caqui:"Decore assim: no distrato, só duas coisas são pagas 'pela metade' — aviso-prévio indenizado e multa do FGTS (20% em vez de 40%). Tudo o mais é pago 100%. E duas 'perdas': sem seguro-desemprego e só 80% do saldo do FGTS pode ser sacado (não 100%). É a modalidade 'ganha-ganha' equilibrada entre demissão consensual e pedido de demissão."
+},
+{
+  num:18, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Aviso-prévio proporcional — Lei 12.506/2011",
+  enunciado:"Fernanda trabalha há exatos 8 anos completos na mesma empresa e é dispensada sem justa causa.",
+  comando:"Considerando a Lei 12.506/2011, quantos dias de aviso-prévio Fernanda terá direito?",
+  alternativas:{
+    A:"30 dias, pois o aviso-prévio proporcional só se aplica a partir de 10 anos de serviço.",
+    B:"54 dias, resultado de 30 dias-base acrescidos de 3 dias por cada ano completo de serviço (30 + 8×3 = 54).",
+    C:"90 dias, o teto máximo, atingido automaticamente para qualquer empregado com mais de 5 anos de casa.",
+    D:"38 dias, resultado da soma simples de 30 dias-base mais 1 dia por cada ano completo (30 + 8×1)."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. O aviso-prévio proporcional se aplica desde o primeiro ano completo de serviço, não apenas a partir de 10 anos.",
+    B:"Correto! Pela Lei 12.506/2011, o aviso-prévio é de 30 dias para até 1 ano de serviço, acrescido de 3 dias por ano completo de serviço na mesma empresa, até o teto de 90 dias (atingido com 20 anos ou mais de casa). Para Fernanda, com 8 anos completos: 30 + (8 × 3) = 30 + 24 = 54 dias.",
+    C:"Errado. O teto de 90 dias só é atingido com 20 anos completos de serviço (30 + 20×3 = 90); com 8 anos, o resultado é 54 dias.",
+    D:"Errado. O acréscimo é de 3 dias por ano completo, não de 1 dia."
+  },
+  fundamento:"Lei 12.506/2011, art. 1º — o aviso prévio será concedido na proporção de 30 dias aos empregados que contem até 1 ano de serviço na mesma empresa. Parágrafo único — ao aviso prévio de que trata o caput serão acrescidos 3 dias por ano de serviço prestado na mesma empresa, até o máximo de 60 dias, perfazendo um total de até 90 dias.",
+  caqui:"Fórmula de prova: aviso-prévio proporcional = 30 + (3 × anos completos de casa), com teto de 90 dias, alcançado exatamente aos 20 anos completos (30 + 20×3 = 90). Para qualquer valor entre 1 e 20 anos, é só aplicar a fórmula direto — a FGV adora pedir esse cálculo com números 'redondos' como o do exemplo."
+},
+{
+  num:19, exame:"Inédita — estilo FGV/OAB",
+  titulo:"Gorjetas — o que integram e o que não integram",
+  enunciado:"Um garçom recebe gorjetas com habitualidade, repassadas pelo empregador conforme sistema de rateio da casa. Ele pretende que essas gorjetas sejam incluídas na base de cálculo de suas horas extras e de seu adicional noturno.",
+  comando:"Sobre a natureza jurídica das gorjetas, assinale a afirmativa correta.",
+  alternativas:{
+    A:"As gorjetas integram a remuneração para todos os fins, inclusive horas extras e adicional noturno, por se tratar de parcela habitual.",
+    B:"As gorjetas integram a remuneração para fins de férias e 13º salário, mas não servem de base de cálculo para aviso-prévio, adicional noturno, horas extras e repouso semanal remunerado.",
+    C:"As gorjetas nunca integram a remuneração, por serem pagas por terceiros (clientes), e não pelo empregador.",
+    D:"As gorjetas só integram a remuneração se o empregador expressamente assim estipular em contrato."
+  },
+  gabarito:"B",
+  feedbacks:{
+    A:"Errado. Apesar de integrarem a remuneração para alguns fins, a jurisprudência do TST não as inclui na base de cálculo de horas extras, adicional noturno, aviso-prévio e repouso semanal remunerado.",
+    B:"Correto! Remuneração é gênero: salário (pago pelo empregador) + gorjetas (pagas por terceiros). As gorjetas integram a remuneração para fins de cálculo de férias e 13º salário, mas, segundo entendimento consolidado, NÃO servem de base de cálculo para aviso-prévio, adicional noturno, horas extras e repouso semanal remunerado.",
+    C:"Errado. Embora pagas por terceiros (clientes), as gorjetas integram sim a remuneração (são o segundo componente do gênero remuneração, ao lado do salário), ainda que com efeitos limitados.",
+    D:"Errado. A natureza jurídica das gorjetas não depende de estipulação contratual — decorre da própria CLT e da jurisprudência consolidada."
+  },
+  fundamento:"Art. 457, CLT — remuneração é o salário (pago diretamente pelo empregador) acrescido das gorjetas recebidas pelo empregado (pagas por terceiros). Entendimento consolidado do TST — gorjetas integram a remuneração para fins de cálculo de férias e 13º salário, mas não compõem a base de cálculo de aviso-prévio, adicional noturno, horas extras e RSR.",
+  caqui:"Remuneração = SALÁRIO (empregador paga) + GORJETA (terceiro/cliente paga). É por isso que remuneração é gênero e salário é espécie. E decore o filtro das gorjetas: ENTRAM na base de cálculo de férias e 13º; NÃO ENTRAM na base de cálculo de aviso-prévio, adicional noturno, horas extras e DSR/RSR — regrinha clássica e recorrente da FGV."
+},
+{
+  num:20, exame:"FGV — XLIII Exame de Ordem Unificado (2025) — questão real, gabarito oficial",
+  titulo:"Culpa recíproca — justa causa concomitante com rescisão indireta",
+  enunciado:"Em sede de sentença prolatada nos autos de reclamação trabalhista, na qual você advoga para a sociedade empresária, parte ré, o Juiz reconheceu que tanto o seu cliente como o autor da ação foram responsáveis pela rescisão motivada do contrato de trabalho, tendo se operado a justa causa do empregado, concomitantemente com a rescisão indireta por parte do empregador.",
+  comando:"Sobre os fatos apresentados, assinale a afirmativa correta.",
+  alternativas:{
+    A:"Dada a concomitância de motivações para o término motivado da relação contratual, presume-se pela dispensa imotivada, sendo devidas as verbas trabalhistas daí decorrentes.",
+    B:"Configurada a culpa recíproca, seu cliente terá direito apenas a 50% das férias vencidas e ao saldo de salários integral, não havendo direito aos valores de aviso prévio, férias e 13º salário proporcionais e à multa sobre o FGTS.",
+    C:"Configurada a culpa recíproca, seu cliente terá direito a 50% do valor do aviso prévio, das férias proporcionais e do 13º salário proporcional, além dos valores das férias vencidas e do saldo de salários. A multa sobre o FGTS, no entanto, não será devida.",
+    D:"Configurada a culpa recíproca, seu cliente terá direito a 50% do valor do aviso prévio, das férias proporcionais e do 13º salário proporcional e 20% da multa sobre o FGTS, além dos valores que já seriam devidos na hipótese de justa causa, quais sejam, férias vencidas e saldo de salários."
+  },
+  gabarito:"D",
+  feedbacks:{
+    A:"Errado. A concomitância de justa causa do empregado e rescisão indireta do empregador não gera presunção de dispensa imotivada — configura, isto sim, a hipótese de culpa recíproca (art. 484, CLT), com regime próprio de verbas reduzidas.",
+    B:"Errado. Pela Súmula 14, TST, o empregado TEM direito a 50% do aviso-prévio, do 13º salário e das férias proporcionais — não é correto dizer que não há esse direito. E a multa do FGTS também é devida, reduzida a 20%.",
+    C:"Errado. A multa do FGTS é sim devida na culpa recíproca, reduzida a 20% (art. 18, §2º, Lei 8.036/90) — não é correto afirmar que ela deixa de ser devida.",
+    D:"Correto! Reconhecida a culpa recíproca (art. 484, CLT), o empregado tem direito a 50% do valor do aviso-prévio, do 13º salário e das férias proporcionais (Súmula 14, TST), além de 20% de multa sobre o FGTS (art. 18, §2º, Lei 8.036/90 — metade dos 40% normais). Somam-se a isso as verbas que já seriam devidas mesmo em caso de justa causa pura: férias vencidas e saldo de salários."
+  },
+  fundamento:"Art. 484, CLT — havendo culpa recíproca no ato que determinou a rescisão do contrato de trabalho, o Tribunal do Trabalho reduzirá a indenização à que seria devida em caso de culpa exclusiva do empregador, por metade. Súmula 14, TST — reconhecida a culpa recíproca, o empregado tem direito a 50% do aviso-prévio, do 13º salário e das férias proporcionais. Art. 18, §2º, Lei 8.036/90 — multa de 20% sobre o FGTS em caso de culpa recíproca (metade dos 40% da dispensa sem justa causa).",
+  caqui:"Monte a 'conta' da culpa recíproca em 3 blocos: (1) o que já seria devido mesmo em justa causa pura — férias vencidas + saldo de salário, sempre 100%; (2) o que é reduzido à METADE — aviso-prévio, 13º proporcional, férias proporcionais (Súmula 14, TST); (3) a multa do FGTS, reduzida à METADE de 40% = 20% (não zero!). É essa combinação completa que a FGV cobra — cuidado com alternativas que 'esquecem' um dos três blocos ou zeram a multa do FGTS."
+}
+];
+
+let cur = 0;
+let resp = {};
+
+function init(){
+  const nav = document.getElementById('navGrid');
+  QUESTOES.forEach((q,i)=>{
+    const b = document.createElement('button');
+    b.className='navbtn';
+    b.id='nb'+q.num;
+    b.textContent=q.num;
+    b.onclick=()=>{ cur=i; render(); };
+    nav.appendChild(b);
+  });
+  const list = document.getElementById('qlist');
+  QUESTOES.forEach((q,i)=>{ list.appendChild(bc(q,i)); });
+  render();
+}
+
+function bc(q,i){
+  const div = document.createElement('div');
+  div.className='qc';
+  div.id='qc'+q.num;
+
+  const head = document.createElement('div');
+  head.className='qhead';
+  head.innerHTML = `<span class="qtag">Questão ${q.num}</span><span class="qexame">${q.exame}</span>`;
+  div.appendChild(head);
+
+  const tit = document.createElement('div');
+  tit.style.fontWeight='800'; tit.style.color='#1a2a4a'; tit.style.marginBottom='6px'; tit.style.fontSize='14px';
+  tit.textContent = q.titulo;
+  div.appendChild(tit);
+
+  const enun = document.createElement('div');
+  enun.className='enunciado';
+  enun.textContent = q.enunciado;
+  div.appendChild(enun);
+
+  const cmd = document.createElement('div');
+  cmd.className='comando';
+  cmd.textContent = q.comando;
+  div.appendChild(cmd);
+
+  const letras = Object.keys(q.alternativas);
+  letras.forEach(l=>{
+    const a = document.createElement('button');
+    a.className='alt';
+    a.id='alt'+q.num+l;
+    a.innerHTML = `<span class="lb">${l}</span><span>${q.alternativas[l]}</span>`;
+    a.onclick = ()=> answer(q,l);
+    div.appendChild(a);
+  });
+
+  const fbOk = document.createElement('div');
+  fbOk.className='fb ok'; fbOk.id='fbok'+q.num;
+  div.appendChild(fbOk);
+  const fbNo = document.createElement('div');
+  fbNo.className='fb no'; fbNo.id='fbno'+q.num;
+  div.appendChild(fbNo);
+
+  const btnrow = document.createElement('div');
+  btnrow.className='btnrow'; btnrow.id='btnrow'+q.num;
+  btnrow.innerHTML = `
+    <button class="tbtn leg" onclick="tF(${q.num})">📖 Ver fundamento legal</button>
+    <button class="tbtn caqui" onclick="tX(${q.num})">🍊 Explicação do Prof. Caqui</button>
+    <button class="tbtn rst" onclick="rst(${q.num})">↺ Tentar novamente</button>
+  `;
+  div.appendChild(btnrow);
+
+  const boxLeg = document.createElement('div');
+  boxLeg.className='box-leg'; boxLeg.id='leg'+q.num;
+  boxLeg.innerHTML = `<div class="hd">📖 Fundamento legal</div><div>${q.fundamento}</div>`;
+  div.appendChild(boxLeg);
+
+  const boxCaqui = document.createElement('div');
+  boxCaqui.className='box-caqui'; boxCaqui.id='caqui'+q.num;
+  boxCaqui.innerHTML = `<div class="hd">🍊 Explicação didática do Professor Caqui</div><div>${q.caqui}</div>`;
+  div.appendChild(boxCaqui);
+
+  return div;
+}
+
+function answer(q,letra){
+  if(resp[q.num]) return;
+  const certo = letra === q.gabarito;
+  resp[q.num] = {letra, certo};
+
+  Object.keys(q.alternativas).forEach(l=>{
+    const el = document.getElementById('alt'+q.num+l);
+    el.classList.add('dis');
+    el.onclick = null;
+    if(l===q.gabarito) el.classList.add('cor');
+    else if(l===letra) el.classList.add('err');
+  });
+
+  const fbOk = document.getElementById('fbok'+q.num);
+  const fbNo = document.getElementById('fbno'+q.num);
+  if(certo){
+    fbOk.classList.add('vis');
+    fbOk.innerHTML = '✓ ' + q.feedbacks[letra];
+  } else {
+    fbNo.classList.add('vis');
+    fbNo.innerHTML = '✗ ' + q.feedbacks[letra] + '<br><br><b>Resposta correta: ' + q.gabarito + '</b> — ' + q.feedbacks[q.gabarito];
+  }
+
+  document.getElementById('btnrow'+q.num).classList.add('vis');
+
+  const nb = document.getElementById('nb'+q.num);
+  nb.classList.remove('cur');
+  nb.classList.add(certo?'ok':'no');
+
+  upd();
+}
+
+function tF(num){ document.getElementById('leg'+num).classList.toggle('vis'); }
+function tX(num){ document.getElementById('caqui'+num).classList.toggle('vis'); }
+
+function rst(num){
+  delete resp[num];
+  const q = QUESTOES.find(x=>x.num===num);
+  Object.keys(q.alternativas).forEach(l=>{
+    const el = document.getElementById('alt'+num+l);
+    el.classList.remove('dis','cor','err');
+    el.onclick = ()=> answer(q,l);
+  });
+  document.getElementById('fbok'+num).classList.remove('vis');
+  document.getElementById('fbno'+num).classList.remove('vis');
+  document.getElementById('btnrow'+num).classList.remove('vis');
+  document.getElementById('leg'+num).classList.remove('vis');
+  document.getElementById('caqui'+num).classList.remove('vis');
+  const nb = document.getElementById('nb'+num);
+  nb.classList.remove('ok','no');
+  render();
+  upd();
+}
+
+function render(){
+  QUESTOES.forEach((q,i)=>{
+    document.getElementById('qc'+q.num).classList.toggle('vis', i===cur);
+    const nb = document.getElementById('nb'+q.num);
+    nb.classList.toggle('cur', i===cur && !resp[q.num]);
+  });
+  document.getElementById('pgIndic').textContent = (cur+1)+' de '+QUESTOES.length;
+  document.getElementById('btnPrev').disabled = cur===0;
+  document.getElementById('btnNext').disabled = cur===QUESTOES.length-1;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function go(d){
+  cur = Math.max(0, Math.min(QUESTOES.length-1, cur+d));
+  render();
+}
+
+function upd(){
+  const total = Object.keys(resp).length;
+  const ok = Object.values(resp).filter(r=>r.certo).length;
+  const no = total-ok;
+  document.getElementById('stTot').textContent = total;
+  document.getElementById('stOk').textContent = ok;
+  document.getElementById('stNo').textContent = no;
+  document.getElementById('pgFill').style.width = (total/QUESTOES.length*100)+'%';
+  document.getElementById('pgTxt').textContent = total+' de '+QUESTOES.length+' respondidas';
+}
+
+init();
+</script>
+</body>
+</html>
